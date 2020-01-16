@@ -75,27 +75,5 @@ namespace TLSHandler.Internal.Crypto
             }
         }
 
-        public static byte[] SignData(byte[] data, RSAParameters privateParameters, Enums.SignatureAlgorithm algorithm)
-        {
-            using (var rsa = new RSACng())
-            {
-                rsa.ImportParameters(privateParameters);
-
-                if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha512)
-                    return rsa.SignData(data, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha384)
-                    return rsa.SignData(data, HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha256)
-                    return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha512)
-                    return rsa.SignData(data, HashAlgorithmName.SHA512, RSASignaturePadding.Pss);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha384)
-                    return rsa.SignData(data, HashAlgorithmName.SHA384, RSASignaturePadding.Pss);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha256)
-                    return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
-                else
-                    throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
-            }
-        }
     }
 }

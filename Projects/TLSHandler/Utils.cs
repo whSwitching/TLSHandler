@@ -31,12 +31,23 @@ namespace TLSHandler
             return Org.BouncyCastle.Utilities.Encoders.Hex.Decode(hexStr);
         }
 
-        public static byte[] UInt16Bytes(ushort u16, bool bigEndian = true)
+        public static void EmptyBuffer(byte[] buff, byte b = 0x00)
         {
-            if (bigEndian)
-                return new[] { (byte)((u16 & 0xFF00) >> 8), (byte)(u16 & 0x00FF) };
-            else
-                return new[] { (byte)(u16 & 0x00FF), (byte)((u16 & 0xFF00) >> 8) };
+            if (buff != null)
+            {
+                for (int i = 0; i < buff.Length; i++)
+                    buff[i] = b;
+            }
+        }
+
+        public static byte[] UInt16Bytes(ushort u16)
+        {
+            return new[] { (byte)((u16 & 0xFF00) >> 8), (byte)(u16 & 0x00FF) };
+        }
+
+        public static ushort ToUInt16(byte[] buff, int idx = 0)
+        {
+            return (ushort)((buff[idx] << 8) + buff[idx + 1]);
         }
     }
 }

@@ -43,19 +43,22 @@ namespace UnitTest.Crypto
                 },
             };
 
-            var aes = new TLSHandler.Internal.Crypto.Aes128_CBC();
-            foreach (var v in testVectors)
+            using(var aes = new TLSHandler.Internal.Crypto.Aes128_CBC())
             {
-                var key = TLSHandler.Utils.HexDecode(v[0]);
-                var iv = TLSHandler.Utils.HexDecode(v[1]);
-                var plain_truth = TLSHandler.Utils.HexDecode(v[2]);
-                var cipher_truth = TLSHandler.Utils.HexDecode(v[3]);
+                foreach (var v in testVectors)
+                {
+                    var key = TLSHandler.Utils.HexDecode(v[0]);
+                    var iv = TLSHandler.Utils.HexDecode(v[1]);
+                    var plain_truth = TLSHandler.Utils.HexDecode(v[2]);
+                    var cipher_truth = TLSHandler.Utils.HexDecode(v[3]);
 
-                var cipher = aes.Encrypt(plain_truth, key, iv);
-                var plain = aes.Decrypt(cipher_truth, key, iv);
-                CollectionAssert.AreEqual(cipher, cipher_truth);
-                CollectionAssert.AreEqual(plain, plain_truth);
+                    var cipher = aes.Encrypt(plain_truth, key, iv);
+                    var plain = aes.Decrypt(cipher_truth, key, iv);
+                    CollectionAssert.AreEqual(cipher, cipher_truth);
+                    CollectionAssert.AreEqual(plain, plain_truth);
+                }
             }
+            
         }
 
         [TestMethod]
@@ -93,19 +96,22 @@ namespace UnitTest.Crypto
                 },
             };
 
-            var aes = new TLSHandler.Internal.Crypto.Aes256_CBC();
-            foreach (var v in testVectors)
+            using(var aes = new TLSHandler.Internal.Crypto.Aes256_CBC())
             {
-                var key = TLSHandler.Utils.HexDecode(v[0]);
-                var iv = TLSHandler.Utils.HexDecode(v[1]);
-                var plain_truth = TLSHandler.Utils.HexDecode(v[2]);
-                var cipher_truth = TLSHandler.Utils.HexDecode(v[3]);
+                foreach (var v in testVectors)
+                {
+                    var key = TLSHandler.Utils.HexDecode(v[0]);
+                    var iv = TLSHandler.Utils.HexDecode(v[1]);
+                    var plain_truth = TLSHandler.Utils.HexDecode(v[2]);
+                    var cipher_truth = TLSHandler.Utils.HexDecode(v[3]);
 
-                var cipher = aes.Encrypt(plain_truth, key, iv);
-                var plain = aes.Decrypt(cipher_truth, key, iv);
-                CollectionAssert.AreEqual(cipher, cipher_truth);
-                CollectionAssert.AreEqual(plain, plain_truth);
+                    var cipher = aes.Encrypt(plain_truth, key, iv);
+                    var plain = aes.Decrypt(cipher_truth, key, iv);
+                    CollectionAssert.AreEqual(cipher, cipher_truth);
+                    CollectionAssert.AreEqual(plain, plain_truth);
+                }
             }
+            
         }
 
         [TestMethod]
@@ -169,22 +175,25 @@ namespace UnitTest.Crypto
                 },
             };
 
-            var aes = new TLSHandler.Internal.Crypto.Aes128_GCM();
-            foreach (var v in testVectors)
+            using(var aes = new TLSHandler.Internal.Crypto.Aes128_GCM())
             {
-                var key = TLSHandler.Utils.HexDecode(v[0]);
-                var plain_truth = TLSHandler.Utils.HexDecode(v[1]);
-                var aad = TLSHandler.Utils.HexDecode(v[2]);
-                var iv = TLSHandler.Utils.HexDecode(v[3]);
-                var cipher = TLSHandler.Utils.HexDecode(v[4]);
-                var tag = TLSHandler.Utils.HexDecode(v[5]);
-                var cipher_truth = cipher.Concat(tag).ToArray();
+                foreach (var v in testVectors)
+                {
+                    var key = TLSHandler.Utils.HexDecode(v[0]);
+                    var plain_truth = TLSHandler.Utils.HexDecode(v[1]);
+                    var aad = TLSHandler.Utils.HexDecode(v[2]);
+                    var iv = TLSHandler.Utils.HexDecode(v[3]);
+                    var cipher = TLSHandler.Utils.HexDecode(v[4]);
+                    var tag = TLSHandler.Utils.HexDecode(v[5]);
+                    var cipher_truth = cipher.Concat(tag).ToArray();
 
-                var cipher_result = aes.Encrypt(plain_truth, key, iv, aad);
-                CollectionAssert.AreEqual(cipher_result, cipher_truth);
-                var plain = aes.Decrypt(cipher_truth, key, iv, aad);
-                CollectionAssert.AreEqual(plain, plain_truth);
+                    var cipher_result = aes.Encrypt(plain_truth, key, iv, aad);
+                    CollectionAssert.AreEqual(cipher_result, cipher_truth);
+                    var plain = aes.Decrypt(cipher_truth, key, iv, aad);
+                    CollectionAssert.AreEqual(plain, plain_truth);
+                }
             }
+            
         }
 
         [TestMethod]
@@ -248,22 +257,25 @@ namespace UnitTest.Crypto
                 },
             };
 
-            var aes = new TLSHandler.Internal.Crypto.Aes256_GCM();
-            foreach (var v in testVectors)
+            using(var aes = new TLSHandler.Internal.Crypto.Aes256_GCM())
             {
-                var key = TLSHandler.Utils.HexDecode(v[0]);
-                var plain_truth = TLSHandler.Utils.HexDecode(v[1]);
-                var aad = TLSHandler.Utils.HexDecode(v[2]);
-                var iv = TLSHandler.Utils.HexDecode(v[3]);
-                var cipher = TLSHandler.Utils.HexDecode(v[4]);
-                var tag = TLSHandler.Utils.HexDecode(v[5]);
-                var cipher_truth = cipher.Concat(tag).ToArray();
+                foreach (var v in testVectors)
+                {
+                    var key = TLSHandler.Utils.HexDecode(v[0]);
+                    var plain_truth = TLSHandler.Utils.HexDecode(v[1]);
+                    var aad = TLSHandler.Utils.HexDecode(v[2]);
+                    var iv = TLSHandler.Utils.HexDecode(v[3]);
+                    var cipher = TLSHandler.Utils.HexDecode(v[4]);
+                    var tag = TLSHandler.Utils.HexDecode(v[5]);
+                    var cipher_truth = cipher.Concat(tag).ToArray();
 
-                var cipher_result = aes.Encrypt(plain_truth, key, iv, aad);
-                CollectionAssert.AreEqual(cipher_result, cipher_truth);
-                var plain = aes.Decrypt(cipher_truth, key, iv, aad);
-                CollectionAssert.AreEqual(plain, plain_truth);
+                    var cipher_result = aes.Encrypt(plain_truth, key, iv, aad);
+                    CollectionAssert.AreEqual(cipher_result, cipher_truth);
+                    var plain = aes.Decrypt(cipher_truth, key, iv, aad);
+                    CollectionAssert.AreEqual(plain, plain_truth);
+                }
             }
+            
         }
 
         [TestMethod]
@@ -333,11 +345,15 @@ namespace UnitTest.Crypto
                 0x72, 0x65, 0x73, 0x73, 0x2e, 0x2f, 0xe2, 0x80, 0x9d
             };
             var cipherBlock_Truth = cipher_truth.Concat(tag_truth).ToArray();
-            var chacha = new TLSHandler.Internal.Crypto.ChaCha20_Poly1305();
-            var cipher = chacha.Encrypt(plain_truth, key, iv, aad);
-            CollectionAssert.AreEqual(cipher, cipherBlock_Truth);
-            var plain = chacha.Decrypt(cipherBlock_Truth, key, iv, aad);
-            CollectionAssert.AreEqual(plain, plain_truth);
+
+            using(var chacha = new TLSHandler.Internal.Crypto.ChaCha20_Poly1305())
+            {
+                var cipher = chacha.Encrypt(plain_truth, key, iv, aad);
+                CollectionAssert.AreEqual(cipher, cipherBlock_Truth);
+                var plain = chacha.Decrypt(cipherBlock_Truth, key, iv, aad);
+                CollectionAssert.AreEqual(plain, plain_truth);
+            }
+            
         }
 
         public void ChaCha20_Poly1305_Case2()
@@ -383,11 +399,14 @@ namespace UnitTest.Crypto
             };
 
             var cipherBlock_Truth = cipher_truth.Concat(tag_truth).ToArray();
-            var chacha = new TLSHandler.Internal.Crypto.ChaCha20_Poly1305();
-            var plain = chacha.Decrypt(cipherBlock_Truth, key, iv, aad);
-            CollectionAssert.AreEqual(plain, plain_truth);
-            var cipher = chacha.Encrypt(plain_truth, key, iv, aad);
-            CollectionAssert.AreEqual(cipher, cipherBlock_Truth);
+
+            using (var chacha = new TLSHandler.Internal.Crypto.ChaCha20_Poly1305())
+            {
+                var plain = chacha.Decrypt(cipherBlock_Truth, key, iv, aad);
+                CollectionAssert.AreEqual(plain, plain_truth);
+                var cipher = chacha.Encrypt(plain_truth, key, iv, aad);
+                CollectionAssert.AreEqual(cipher, cipherBlock_Truth);
+            }
         }
     }
 

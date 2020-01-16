@@ -67,9 +67,16 @@
     <Compile Include="Internal\Crypto\HKDF.cs" />
     <Compile Include="Internal\Crypto\PRF.cs" />
     <Compile Include="Internal\Crypto\RSA.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature_Pkcs1Sha256.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature_Pkcs1Sha384.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature_Pkcs1Sha512.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature_PssRsaeSha256.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature_PssRsaeSha384.cs" />
+    <Compile Include="Internal\Crypto\RsaSignature_PssRsaeSha512.cs" />
     <Compile Include="Internal\IBulkEncryption.cs" />
     <Compile Include="Internal\IKeyExchange.cs" />
-    <Compile Include="Internal\IHashSignature.cs" />
+    <Compile Include="Internal\ISignature.cs" />
     <Compile Include="Internal\IMessageAuthentication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
