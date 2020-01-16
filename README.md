@@ -25,10 +25,10 @@ BulkEncryption implementation:
 - [x] rsa_pss_rsae_sha512 (0x0806)
 
 [CipherSuite](https://tools.ietf.org/html/rfc8446#appendix-B.4) implementation:
-- [x] TLS_RSA_WITH_AES_128_CBC_SHA (0x002F) <font color=gray size=2>TLS1.2 Mandatory</font>
+- [x] TLS_RSA_WITH_AES_128_CBC_SHA (0x002F) _(TLS1.2 Mandatory)_
 - [x] TLS_RSA_WITH_AES_128_CBC_SHA256 (0x003C)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xC013)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (0xC027)
-- [x] TLS_AES_128_GCM_SHA256 (0x1301) <font color=gray size=2>TLS1.3 Mandatory</font>
+- [x] TLS_AES_128_GCM_SHA256 (0x1301) _(TLS1.3 Mandatory)_
 - [x] TLS_AES_256_GCM_SHA384 (0x1302)
-- [x] TLS_CHACHA20_POLY1305_SHA256 (0x1303) <font color=gray size=2>TLS1.3 Mobile Client Prefer</font>
+- [x] TLS_CHACHA20_POLY1305_SHA256 (0x1303) _(TLS1.3 Mobile Client Prefer)_
