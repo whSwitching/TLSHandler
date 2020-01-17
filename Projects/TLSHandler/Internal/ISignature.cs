@@ -12,7 +12,7 @@ namespace TLSHandler.Internal
 
         byte[] Hash(byte[] data);
 
-        byte[] Sign(byte[] data, object rsaPrivateParameters);
+        byte[] Sign(byte[] data, object privateParameters);
 
     }
 }
