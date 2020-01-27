@@ -7,7 +7,7 @@ BulkEncryption implementation:
 - [x] AES_256_CBC
 - [x] AES_128_GCM
 - [x] AES_256_GCM
-- [x] ChaCha20_Poly1305
+- [x] [ChaCha20_Poly1305](https://tools.ietf.org/html/rfc8439)
 
 [NamedGroup](https://tools.ietf.org/html/rfc8422#section-5.1.1) implementation:
 - [x] secp256r1 (0x0017)
