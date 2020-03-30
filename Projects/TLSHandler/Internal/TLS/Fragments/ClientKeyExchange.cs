@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc5246#section-7.4.7
-    public class ClientKeyExchange : FragmentBody
+    class ClientKeyExchange : FragmentBody
     {
         // for RSA
         public ushort RSA_PreMasterSecretLength { get { return Utils.ToUInt16(Data, 0); } }

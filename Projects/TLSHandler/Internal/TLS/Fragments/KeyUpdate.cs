@@ -8,7 +8,7 @@ using TLSHandler.Enums;
 namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc8446#section-4.6.3
-    public class KeyUpdate : FragmentBody
+    class KeyUpdate : FragmentBody
     {
         public KeyUpdateRequest Request { get { return (KeyUpdateRequest)Data[0]; } }
 

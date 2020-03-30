@@ -8,7 +8,7 @@ namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc5246#section-7.4.2
     //https://tools.ietf.org/html/rfc8446#section-4.4.2
-    public class Certificate : FragmentBody
+    class Certificate : FragmentBody
     {
         internal System.Security.Cryptography.X509Certificates.X509Certificate2[] Certs { get; private set; }
 

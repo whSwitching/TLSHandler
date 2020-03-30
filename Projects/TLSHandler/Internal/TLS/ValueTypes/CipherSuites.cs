@@ -7,7 +7,7 @@ using TLSHandler.Enums;
 
 namespace TLSHandler.Internal.TLS.ValueTypes
 {
-    public class CipherSuites : PacketData
+    class CipherSuites : PacketData
     {
         public CipherSuite[] Ciphers { get; private set; }
 

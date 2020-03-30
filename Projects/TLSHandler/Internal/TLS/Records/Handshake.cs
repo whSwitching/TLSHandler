@@ -16,6 +16,11 @@ namespace TLSHandler.Internal.TLS.Records
             Fragments = ExtractFragments(payload);
         }
 
+        public Handshake(PacketData[] fragments) : base(RecordType.Handshake, ProtocolVersion.TLSv1_2, Utils.GetPayloadData(fragments))
+        {
+            Fragments = fragments;
+        }
+
         PacketData[] ExtractFragments(byte[] payload)
         {
             var ret = new List<PacketData>();

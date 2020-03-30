@@ -25,6 +25,16 @@ namespace TLSHandler.Internal.TLS.Records
             }
         }
 
+        protected TLSRecord(byte[] header, byte[] payload)
+        {
+            using (var ms = new System.IO.MemoryStream())
+            {
+                ms.Write(header, 0, header.Length);
+                ms.Write(payload, 0, payload.Length);
+                Data = ms.ToArray();
+            }
+        }
+
         public byte[] GetHeaderBytes()
         {
             return Data.Take(5).ToArray();
@@ -44,7 +54,7 @@ namespace TLSHandler.Internal.TLS.Records
 
                 var buffer = new byte[length];
                 Buffer.BlockCopy(recordsBytes, idx, buffer, 0, buffer.Length);
-                records.Add(Factory(type, ver, buffer));
+                records.Add(Factory(type, buffer, ver));
 
                 idx += length;
             }
@@ -52,7 +62,7 @@ namespace TLSHandler.Internal.TLS.Records
             return records.ToArray();
         }
 
-        public static TLSRecord Factory(RecordType type, ProtocolVersion ver, byte[] payload)
+        public static TLSRecord Factory(RecordType type, byte[] payload, ProtocolVersion ver = ProtocolVersion.TLSv1_2)
         {
             if (type == RecordType.Alert)
                 return new Alert(payload);

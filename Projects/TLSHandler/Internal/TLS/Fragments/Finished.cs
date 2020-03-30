@@ -8,7 +8,7 @@ namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc5246#section-7.4.9
     //https://tools.ietf.org/html/rfc8446#section-4.4.4
-    public class Finished : FragmentBody
+    class Finished : FragmentBody
     {
         public byte[] VerifyData { get; private set; }
         public byte[] Mac { get; private set; }

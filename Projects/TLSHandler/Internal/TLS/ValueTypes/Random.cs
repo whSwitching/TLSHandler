@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TLSHandler.Internal.TLS.ValueTypes
 {
-    public class Random : PacketData
+    class Random : PacketData
     {
         public Random()
         {

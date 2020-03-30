@@ -7,8 +7,10 @@ using TLSHandler.Enums;
 
 namespace TLSHandler.Internal.TLS.ValueTypes
 {
-    public class CompressionMethods : PacketData
+    class CompressionMethods : PacketData
     {
+        public CompressionMethod[] Methods { get; private set; }
+
         public CompressionMethods(CompressionMethod[] methods)
         {
             if (methods == null || methods.Length == 0)
@@ -17,6 +19,8 @@ namespace TLSHandler.Internal.TLS.ValueTypes
             }
             else
             {
+                Methods = methods;
+
                 Data = new byte[1 + methods.Length];
                 Data[0] = (byte)methods.Length;
                 for (int i = 0; i < methods.Length; i++)

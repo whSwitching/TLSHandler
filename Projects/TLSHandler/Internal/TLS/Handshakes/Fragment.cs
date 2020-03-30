@@ -7,7 +7,7 @@ using TLSHandler.Enums;
 
 namespace TLSHandler.Internal.TLS.Handshakes
 {
-    public class Fragment : PacketData
+    class Fragment : PacketData
     {
         public virtual HandshakeType MessageType { get { return (HandshakeType)Data[0]; } }
         public virtual uint BodyLength { get { return Utils.ToUInt24(Data, 1); } }

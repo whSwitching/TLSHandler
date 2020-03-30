@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace TLSHandler.Internal
 {
-    interface IKeyExchange
+    interface IKeyExchange : IDisposable
     {
+        bool IsRsaKeyExchange { get; }
+        void Exchange(byte[] encryptedPreMasterSecret, byte[] clientRandom, byte[] serverRandom, object privateParameters);
     }
 }

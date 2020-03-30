@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc8446#section-4.3.1
-    public class EncryptedExtensions : FragmentBody
+    class EncryptedExtensions : FragmentBody
     {
         public EncryptedExtensions() : base(null)
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc8446#section-4.6.1
-    public class NewSessionTicket : FragmentBody
+    class NewSessionTicket : FragmentBody
     {
         public uint LifetimeSecs { get; private set; }
         public uint AgeAdd { get; private set; }

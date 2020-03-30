@@ -9,7 +9,7 @@ namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc5246#section-7.4.1.3
     //https://tools.ietf.org/html/rfc8446#section-4.1.3
-    public class ServerHello : FragmentBody
+    class ServerHello : FragmentBody
     {
         public ProtocolVersion ProtocolVersion { get; private set; }
 

@@ -7,8 +7,11 @@ using TLSHandler.Enums;
 
 namespace TLSHandler.Internal.TLS.Handshakes
 {
-    public class EncryptedFragment : PacketData
+    class EncryptedFragment : PacketData
     {
+        public byte[] IV { get { return Data.Take(16).ToArray(); } }
+        public byte[] EncryptedData { get { return Data.Skip(16).ToArray(); } }
+
         public EncryptedFragment(byte[] bodyBytes)
         {
             Data = bodyBytes;

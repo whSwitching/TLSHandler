@@ -10,8 +10,5 @@ namespace TLSHandler.Internal
     {
         int KeySize { get; }
 
-        byte[] Encrypt(byte[] plain, byte[] key, byte[] iv, byte[] aad = null, byte[] associated = null);
-
-        byte[] Decrypt(byte[] secret, byte[] key, byte[] iv, byte[] aad = null, byte[] associated = null);
     }
 }

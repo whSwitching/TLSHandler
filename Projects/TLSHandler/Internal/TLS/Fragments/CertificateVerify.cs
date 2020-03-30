@@ -8,7 +8,7 @@ using TLSHandler.Enums;
 namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc8446#section-4.4.3
-    public class CertificateVerify : FragmentBody
+    class CertificateVerify : FragmentBody
     {
         public SignatureAlgorithm SignatureAlgorithm { get; private set; }
         public ushort SignatureLength { get; private set; }

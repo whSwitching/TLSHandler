@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TLSHandler.Internal.TLS.ValueTypes
 {
-    public class Session : PacketData
+    class Session : PacketData
     {
         public byte[] ID { get; private set; }
 

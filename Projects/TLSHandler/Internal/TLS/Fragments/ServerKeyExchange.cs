@@ -9,7 +9,7 @@ namespace TLSHandler.Internal.TLS.Fragments
 {
     // only for ECDH
     //https://tools.ietf.org/html/rfc4492#section-5.4
-    public class ServerKeyExchange : FragmentBody
+    class ServerKeyExchange : FragmentBody
     {
         public ECCurveType CurveType { get; private set; }
         public NamedGroup NamedCurve { get; private set; }

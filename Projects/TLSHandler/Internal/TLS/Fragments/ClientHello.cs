@@ -8,7 +8,7 @@ using TLSHandler.Enums;
 namespace TLSHandler.Internal.TLS.Fragments
 {
     //https://tools.ietf.org/html/rfc5246#section-7.4.1.2
-    public class ClientHello : FragmentBody
+    class ClientHello : FragmentBody
     {
         public ProtocolVersion ProtocolVersion { get; private set; }
 
