@@ -38,12 +38,7 @@ namespace TLSHandler
             }
             return sb.ToString();
         }
-
-        public static byte[] HexDecode(string hexStr)
-        {
-            return Org.BouncyCastle.Utilities.Encoders.Hex.Decode(hexStr);
-        }
-
+        
         public static byte[] CopyBuffer(byte[] from)
         {
             var to = new byte[from.Length];

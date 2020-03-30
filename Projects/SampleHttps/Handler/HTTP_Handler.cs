@@ -10,7 +10,7 @@ namespace Https.Handler
     {
         public static byte[] GetResponseData(TcpSession session, string[] requests)
         {
-            var data = MakeStatusResponse(session, requests);
+            var data = MakeTraceResponse(session, requests);
 
             var header = $"HTTP/1.1 200 OK\r\n" +
                          $"Content-Type: text/html\r\n" +
@@ -22,7 +22,7 @@ namespace Https.Handler
             return Encoding.ASCII.GetBytes(header).Concat(data).ToArray();
         }
 
-        static byte[] MakeStatusResponse(TcpSession session, string[] rawReq)
+        static byte[] MakeTraceResponse(TcpSession session, string[] rawReq)
         {
             var info = session.TLSContext.GetSessionInfo();
 

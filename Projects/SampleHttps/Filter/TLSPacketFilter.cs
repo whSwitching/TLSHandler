@@ -10,7 +10,7 @@ namespace Https.Filter
 {
     class TLSPacketFilter : FixedHeaderReceiveFilter<Request.TLSRequest>
     {
-        // 8 bytes header for tds, 5 bytes header for tls record
+        // 5 bytes header for tls record
         public TLSPacketFilter() : base(5) 
         {
         }
