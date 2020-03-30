@@ -27,16 +27,23 @@ BulkEncryption implementation:
 - [x] rsa_pss_rsae_sha512 (0x0806)
 
 [CipherSuite](https://tools.ietf.org/html/rfc8446#appendix-B.4) implementation:
-- [x] TLS_RSA_WITH_AES_128_CBC_SHA (0x002F) &emsp;&emsp; [(TLS 1.2 Mandatory)](https://tools.ietf.org/html/rfc5246#section-9)
+- [x] TLS\_RSA\_WITH\_AES\_128\_CBC\_SHA (0x002F) &emsp;&emsp; _[(TLS 1.2 Mandatory)](https://tools.ietf.org/html/rfc5246#section-9)_
 - [x] TLS_RSA_WITH_AES_128_CBC_SHA256 (0x003C)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xC013)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (0xC027)
-- [x] TLS_AES_128_GCM_SHA256 (0x1301) &emsp;&emsp; [(TLS 1.3 Mandatory)](https://tools.ietf.org/html/rfc8446#section-9.1)
+- [x] TLS\_AES\_128\_GCM\_SHA256 (0x1301) &emsp;&emsp; _[(TLS 1.3 Mandatory)](https://tools.ietf.org/html/rfc8446#section-9.1)_
 - [x] TLS_AES_256_GCM_SHA384 (0x1302)
-- [x] TLS_CHACHA20_POLY1305_SHA256 (0x1303) &emsp;&emsp; _(TLS1.3 Mobile Client Prefer)_
+- [x] TLS\_CHACHA20\_POLY1305\_SHA256 (0x1303) &emsp;&emsp; _(TLS1.3 Mobile Client Prefer)_
 
 ****
 
-* [usage sample](https://github.com/whSwitching/TLSHandler/tree/master/Projects/SampleHttps) is a working demo of https service without using SslStream
+##### Not implemented
+- [ ] [NewSessionTicket](https://tools.ietf.org/html/rfc8446#section-4.6.1) handshake message
+- [ ] Psk KeyExchange
+- [ ] [0-RTT Data](https://tools.ietf.org/html/rfc8446#section-2.3)
 
-* if you don&apos;t know how to Read tls records from a stream, this repository will not help you anything at all, System.Net.Security.SslStream did a way better job
+## Usage
+
+* [https sample](https://github.com/whSwitching/TLSHandler/tree/master/Projects/SampleHttps) is a working demo of https service without using SslStream
+
+* if you don&apos;t know how to Read tls records from a stream, you were actually looking for [System.Net.Security.SslStream](https://docs.microsoft.com/en-us/dotnet/api/system.net.security.sslstream?view=netframework-4.8) but not this repository
