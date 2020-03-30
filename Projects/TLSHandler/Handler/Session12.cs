@@ -58,6 +58,7 @@ namespace TLSHandler.Handler
         }
         protected void LogSessionInfo(Fragments.FragmentBody fragBody)
         {
+#if DEBUG
             if (fragBody is Fragments.ClientHello ch)
             {
                 _sessionInfo.Add("ClientHello", new Dictionary<string, string>());
@@ -134,6 +135,7 @@ namespace TLSHandler.Handler
                 _sessionInfo["CertificateVerify"].Add("SignatureAlgorithm", cerv.SignatureAlgorithm.ToString());
                 _sessionInfo["CertificateVerify"].Add("Signature", Utils.BytesString(cerv.Signature));
             }
+#endif
         }
         #endregion
 

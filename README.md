@@ -1,7 +1,9 @@
 # TLSHandler
 C# implementation of TLS 1.2/1.3
+> as you dig deeper, Transport Layer Security becomes Application Layer Security to you
 
 ****
+
 BulkEncryption implementation:
 - [x] AES_128_CBC
 - [x] AES_256_CBC
@@ -25,10 +27,16 @@ BulkEncryption implementation:
 - [x] rsa_pss_rsae_sha512 (0x0806)
 
 [CipherSuite](https://tools.ietf.org/html/rfc8446#appendix-B.4) implementation:
-- [x] TLS_RSA_WITH_AES_128_CBC_SHA (0x002F) _(TLS1.2 Mandatory)_
+- [x] TLS_RSA_WITH_AES_128_CBC_SHA (0x002F) &emsp;&emsp; [(TLS 1.2 Mandatory)](https://tools.ietf.org/html/rfc5246#section-9)
 - [x] TLS_RSA_WITH_AES_128_CBC_SHA256 (0x003C)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xC013)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (0xC027)
-- [x] TLS_AES_128_GCM_SHA256 (0x1301) _(TLS1.3 Mandatory)_
+- [x] TLS_AES_128_GCM_SHA256 (0x1301) &emsp;&emsp; [(TLS 1.3 Mandatory)](https://tools.ietf.org/html/rfc8446#section-9.1)
 - [x] TLS_AES_256_GCM_SHA384 (0x1302)
-- [x] TLS_CHACHA20_POLY1305_SHA256 (0x1303) _(TLS1.3 Mobile Client Prefer)_
+- [x] TLS_CHACHA20_POLY1305_SHA256 (0x1303) &emsp;&emsp; _(TLS1.3 Mobile Client Prefer)_
+
+****
+
+* [usage sample](https://github.com/whSwitching/TLSHandler/tree/master/Projects/SampleHttps) is a working demo of https service without using SslStream
+
+* if you don&apos;t know how to Read tls records from a stream, this repository will not help you anything at all, System.Net.Security.SslStream did a way better job
