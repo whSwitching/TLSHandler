@@ -15,8 +15,22 @@ namespace Https
             log4net.Config.XmlConfigurator.Configure();
 
             var svr = new Https.HttpServer();
-            svr.Setup();
-            svr.Start();
+            var setup = svr.Setup();
+            if (!setup)
+            {
+                Console.WriteLine("Setup Failed, something is wrong. press any key to exit");
+                Console.ReadKey();
+                return;
+            }
+            var start = svr.Start();
+            if (!start)
+            {
+                Console.WriteLine("Start Failed, something is wrong. press any key to exit");
+                Console.ReadKey();
+                return;
+            }
+            else
+                Console.WriteLine($"Service Started, https://{svr.IP}:{svr.Port}");
 
             Console.WriteLine("Press Q to Quit");
             var ch = Console.ReadKey();

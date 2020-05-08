@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,12 +15,14 @@ namespace Https
 {
     public class HttpServer : AppServer<TcpSession, Request.TLSRequest>
     {
+        public readonly IPAddress IP;
         public readonly int Port;
         public readonly string PublicKeyFile;
         public readonly string PrivateKeyFile;
 
         public HttpServer()
         {
+            var ip = ConfigurationManager.AppSettings["ServerIP"];
             var port = ConfigurationManager.AppSettings["ServerPort"];
             var pubkey = ConfigurationManager.AppSettings["ServerCertFilepath"];
             var pvtkey = ConfigurationManager.AppSettings["ServerPfxFilepath"];
@@ -29,6 +32,8 @@ namespace Https
             if (!Path.IsPathRooted(pvtkey))
                 pvtkey = GetFilePath(pvtkey);
 
+            if (!IPAddress.TryParse(ip, out IP))
+                throw new ArgumentException($"AppSetting [ServerIP] ({ip}) invalid");
             if (!int.TryParse(port, out Port))
                 throw new ArgumentException($"AppSetting [ServerPort] ({port}) invalid");
             if (!File.Exists(pubkey))
@@ -45,7 +50,7 @@ namespace Https
         {
             var cfg = new ServerConfig
             {
-                Ip = "127.0.0.1",
+                Ip = IP.ToString(),
                 Port = this.Port,
                 MaxRequestLength = 100 * 1024,    // 100k
                 ClearIdleSession = true,
