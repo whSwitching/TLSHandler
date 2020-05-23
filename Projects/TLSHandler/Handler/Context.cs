@@ -68,7 +68,7 @@ namespace TLSHandler.Handler
         #region parameters negotiation
         Result Parameters_Negotiation(TLS.Fragments.ClientHello ch)
         {
-            _params = new NegotiationParams();
+            _params = new NegotiationParams(false, true);
             if (_enableTls13 && CanSupportTls13(ch))
             {
                 _params.Cipher = Select_CipherSuite(ch, true);

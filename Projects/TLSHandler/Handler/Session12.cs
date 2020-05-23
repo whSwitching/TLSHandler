@@ -322,8 +322,29 @@ namespace TLSHandler.Handler
         #endregion
 
         #region ClientHello
+        protected virtual Result Fragment_ClientHello_ServerNameCheck(Fragments.ClientHello frag)
+        {
+            if (_params.ServerNameCheck)
+            {
+                if (frag.ServerName != null && frag.ServerName.Length > 0)
+                {
+                    var subject = new X509Certificate2(_pubkeyfile, "").Subject.Split(new[] { ',' });
+                    var cn = subject.First(a => a.StartsWith("CN=")).Trim().Split(new[] { '=' })[1];
+                    if (!frag.ServerName.Contains(cn))
+                        return Result.FatalAlert(AlertDescription.unrecognized_name, "ServerName Extension in [ClientHello] NOT MATCH");
+                }
+                else
+                    return Result.FatalAlert(AlertDescription.missing_extension, "ServerName Extension Missing in [ClientHello]");
+            }
+            return null;
+        }
+
         protected virtual Result Fragment_ClientHello(Fragments.ClientHello frag)
         {
+            var sncheck = Fragment_ClientHello_ServerNameCheck(frag);
+            if (sncheck != null)
+                return sncheck;
+
             State = TLSSessionState.Client_Hello;
 
             _params.ClientRandom = frag.Random;

@@ -88,6 +88,10 @@ namespace TLSHandler.Handler
 
         protected override Result Fragment_ClientHello(Fragments.ClientHello frag)
         {
+            var sncheck = Fragment_ClientHello_ServerNameCheck(frag);
+            if (sncheck != null)
+                return sncheck;
+
             State = TLSSessionState.Client_Hello;
 
             _params.ClientRandom = frag.Random;
