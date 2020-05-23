@@ -10,7 +10,7 @@ using Parameters = Org.BouncyCastle.Crypto.Parameters;
 
 namespace TLSHandler.Internal.BulkEncryption
 {
-    class Aes256_GCM : IAeadBulkEncryption
+    class Aes256_GCM : IBulkEncryption, IAead
     {
         public int KeySize { get { return 256; } }
         public int MacSize { get { return 128; } }

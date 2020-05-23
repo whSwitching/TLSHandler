@@ -10,7 +10,7 @@ namespace TLSHandler.Internal.Ciphers
 {
     abstract class Suite12<keyexchange, bulkencryption, hmac> : CipherSuiteBase12
         where keyexchange : KeyExchange.KeyExchange12
-        where bulkencryption : IEmBulkEncryption
+        where bulkencryption : IBulkEncryption
         where hmac : HMAC
     {
 

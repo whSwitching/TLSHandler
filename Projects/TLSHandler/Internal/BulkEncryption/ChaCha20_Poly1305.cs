@@ -11,7 +11,7 @@ using Parameters = Org.BouncyCastle.Crypto.Parameters;
 namespace TLSHandler.Internal.BulkEncryption
 {
     //https://tools.ietf.org/html/rfc8439#section-2.8
-    class ChaCha20_Poly1305 : IAeadBulkEncryption
+    class ChaCha20_Poly1305 : IBulkEncryption, IAead
     {
         public int KeySize { get { return 256; } }
         public int MacSize { get { return 128; } }

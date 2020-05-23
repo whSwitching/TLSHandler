@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace TLSHandler.Internal.Ciphers
 {
     abstract class Suite13<bulkencryption, hmac, hash> : CipherSuiteBase13
-        where bulkencryption : IAeadBulkEncryption
+        where bulkencryption : IBulkEncryption, IAead
         where hmac : HMAC
         where hash : HashAlgorithm
     {

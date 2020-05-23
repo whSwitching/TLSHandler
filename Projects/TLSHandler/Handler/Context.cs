@@ -125,10 +125,10 @@ namespace TLSHandler.Handler
                     return null;
                 if (client_ciphers.Contains(CipherSuite.TLS_AES_256_GCM_SHA384))
                     return new Ciphers.TLS_AES_256_GCM_SHA384();
-                else if (client_ciphers.Contains(CipherSuite.TLS_AES_128_GCM_SHA256))          // TLS1.3 Mandatory Cipher Suite
-                    return new Ciphers.TLS_AES_128_GCM_SHA256();
                 else if (client_ciphers.Contains(CipherSuite.TLS_CHACHA20_POLY1305_SHA256))    // mobile client use
                     return new Ciphers.TLS_CHACHA20_POLY1305_SHA256();
+                else if (client_ciphers.Contains(CipherSuite.TLS_AES_128_GCM_SHA256))          // TLS1.3 Mandatory Cipher Suite
+                    return new Ciphers.TLS_AES_128_GCM_SHA256();                
                 return null;
             }
             else

@@ -88,9 +88,7 @@
     <Compile Include="Handler\NegotiationParams.cs" />
     <Compile Include="Internal\RandomFunction\HKDF.cs" />
     <Compile Include="Internal\RandomFunction\PRF.cs" />
-    <Compile Include="Internal\IAeadBulkEncryption.cs" />
     <Compile Include="Internal\IBulkEncryption.cs" />
-    <Compile Include="Internal\IEmBulkEncryption.cs" />
     <Compile Include="Internal\IKeyExchange.cs" />
     <Compile Include="Internal\IMessageAuthentication.cs" />
     <Compile Include="Internal\TLS\Records\Alert.cs" />

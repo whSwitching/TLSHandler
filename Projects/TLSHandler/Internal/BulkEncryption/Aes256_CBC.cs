@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TLSHandler.Internal.BulkEncryption
 {
-    class Aes256_CBC : IEmBulkEncryption
+    class Aes256_CBC : IBulkEncryption
     {
         public int KeySize { get { return 256; } }
 
@@ -22,7 +22,7 @@ namespace TLSHandler.Internal.BulkEncryption
             };
         }
 
-        public byte[] Encrypt(byte[] plain, byte[] key, byte[] iv)
+        public byte[] Encrypt(byte[] plain, byte[] key, byte[] iv, byte[] aead_aad = null, byte[] aead_associated = null)
         {
             if (key.Length * 8 != this.KeySize)
                 throw new InvalidOperationException($"the given key has invalid size {key.Length * 8}, expect {this.KeySize}");
@@ -32,7 +32,7 @@ namespace TLSHandler.Internal.BulkEncryption
             return encryptor.TransformFinalBlock(plain, 0, plain.Length);
         }
 
-        public byte[] Decrypt(byte[] secret, byte[] key, byte[] iv)
+        public byte[] Decrypt(byte[] secret, byte[] key, byte[] iv, byte[] aead_aad = null, byte[] aead_associated = null)
         {
             if (key.Length * 8 != this.KeySize)
                 throw new InvalidOperationException($"the given key has invalid size {key.Length * 8}, expect {this.KeySize}");
