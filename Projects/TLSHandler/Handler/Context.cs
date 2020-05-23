@@ -18,12 +18,12 @@ namespace TLSHandler.Handler
         Session12 _session = null;
         string _pubkeyfile = null;
         string _prvkeyfile = null;
-        bool _enableTls13 = true;
 
         public Context(string pub_crt_filepath, string prv_pfx_filepath)
         {
             _pubkeyfile = pub_crt_filepath;
             _prvkeyfile = prv_pfx_filepath;
+            _params = new NegotiationParams(false, true, false);
         }
 
         public Result Initialize(TLS.Records.Handshake clientHello)
@@ -35,11 +35,11 @@ namespace TLSHandler.Handler
             {
                 if (clientHello.Fragments[0] is TLS.Handshakes.Fragment hf && hf.Body is TLS.Fragments.ClientHello ch)
                 {
-                    var err = Parameters_Negotiation(ch);
+                    var err = Parameters_Negotiation(ch, out bool tls13Session);
                     if (err != null)
                         return err;
 
-                    _session = _params.Tls13 ? new Session13(_params, _pubkeyfile, _prvkeyfile) : new Session12(_params, _pubkeyfile, _prvkeyfile);
+                    _session = tls13Session ? new Session13(_params, _pubkeyfile, _prvkeyfile) : new Session12(_params, _pubkeyfile, _prvkeyfile);
 
                     return _session.Process_Record(clientHello);
                 }
@@ -66,16 +66,15 @@ namespace TLSHandler.Handler
         }
 
         #region parameters negotiation
-        Result Parameters_Negotiation(TLS.Fragments.ClientHello ch)
+        Result Parameters_Negotiation(TLS.Fragments.ClientHello ch, out bool is_tls13Session)
         {
-            _params = new NegotiationParams(false, true);
-            if (_enableTls13 && CanSupportTls13(ch))
+            if (_params.EnableTls13 && ClientSupportTls13(ch))
             {
                 _params.Cipher = Select_CipherSuite(ch, true);
                 _params.KeyExchangeCurve = Select_EllipticCurve(ch.SupportedGroups).Value;
-                _params.SignatureAlgorithm = Select_SignatureAlgorithm(ch.SignatureAlgorithms).Value;
-                _params.Tls13 = true;
+                _params.SignatureAlgorithm = Select_SignatureAlgorithm(ch.SignatureAlgorithms).Value;                
                 _params.KeyShare = Select_KeyShareEntry(ch.KeyShare);
+                is_tls13Session = true;
                 return null;
             }
             else
@@ -87,7 +86,7 @@ namespace TLSHandler.Handler
                     _params.KeyExchangeCurve = kec.Value;
                 if (sa.HasValue)
                     _params.SignatureAlgorithm = sa.Value;
-                _params.Tls13 = false;
+                is_tls13Session = false;
                 if (_params.Cipher != null)
                     return null;
                 else
@@ -95,7 +94,7 @@ namespace TLSHandler.Handler
             }
         }
 
-        bool CanSupportTls13(TLS.Fragments.ClientHello ch)
+        bool ClientSupportTls13(TLS.Fragments.ClientHello ch)
         {
             var sv = ch.SupportedVersions;
             var ks = ch.KeyShare;

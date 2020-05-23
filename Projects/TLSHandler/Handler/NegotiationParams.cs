@@ -11,7 +11,10 @@ namespace TLSHandler.Handler
 {
     class NegotiationParams
     {
-        public bool ServerNameCheck { get; set; }   //SNI check
+        public bool ServerNameCheck { get; private set; }   //SNI check
+        public bool ClientCertificateRequire { get; private set; }
+        public bool EnableTls13 { get; private set; }
+
         public TLS.ValueTypes.Random ClientRandom { get; set; }
         public TLS.ValueTypes.Random ServerRandom { get; set; }
         public TLS.ValueTypes.Session Session { get; set; } // session id in clienthello
@@ -20,15 +23,14 @@ namespace TLSHandler.Handler
         public Ciphers.CipherSuiteBase Cipher { get; set; }
         public Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair ServerKey { get; set; }
 
-        public bool ClientCertificateRequire { get; set; }
-        public bool Tls13 { get; set; }
         public TLS.Extensions.KeyShareEntry KeyShare { get; set; }
         public TLS.Extensions.ClientOfferedPsks PSK { get; set; }
 
-        public NegotiationParams(bool clientCertRequire = false, bool forceServerNameCheck = false)
+        public NegotiationParams(bool clientCertRequire = false, bool forceServerNameCheck = false, bool enableTls13 = true)
         {
             ClientCertificateRequire = clientCertRequire;
             ServerNameCheck = forceServerNameCheck;
+            EnableTls13 = enableTls13;
         }
     }
 }

@@ -88,7 +88,7 @@ namespace TLSHandler.Handler
             else if (fragBody is Fragments.ServerHello sh)
             {
                 _sessionInfo.Add("ServerHello", new Dictionary<string, string>());
-                _sessionInfo["ServerHello"].Add("ProtocolVersion", sh.ProtocolVersion.ToString() + (_params.Tls13 ? " (TLS 1.3 Payload)" : string.Empty));
+                _sessionInfo["ServerHello"].Add("ProtocolVersion", sh.ProtocolVersion.ToString() + (this is Session13 ? " (TLS 1.3 Payload)" : string.Empty));
                 _sessionInfo["ServerHello"].Add("CipherSuite", sh.CipherSuite.ToString());
                 _sessionInfo["ServerHello"].Add("CompressionMethod", sh.CompressionMethod.ToString());
                 if (sh.Extensions != null)
@@ -348,8 +348,9 @@ namespace TLSHandler.Handler
             State = TLSSessionState.Client_Hello;
 
             _params.ClientRandom = frag.Random;
-            _params.ServerRandom = new TLS.ValueTypes.Random();
-            _params.ServerRandom.UpdateLastBytesForTLS12Session();
+            _params.ServerRandom = new TLS.ValueTypes.Random();            
+            if (_params.EnableTls13)    // only when this is TLS13 server and client is TLS12, orelse ERR_TLS13_DOWNGRADE_DETECTED will be thrown from client
+                _params.ServerRandom.UpdateLastBytesForTLS12Session();
             _params.Session = new TLS.ValueTypes.Session(Guid.NewGuid());
 
             var result = _params.Cipher.IsRsaKeyExchange
