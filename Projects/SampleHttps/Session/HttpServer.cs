@@ -19,6 +19,9 @@ namespace Https
         public readonly int Port;
         public readonly string PublicKeyFile;
         public readonly string PrivateKeyFile;
+        public readonly bool ForceClientCertificate = false;
+        public readonly bool ForceServerNameCheck = true;
+        public readonly bool EnableTLS13 = true;
 
         public HttpServer()
         {
@@ -26,6 +29,9 @@ namespace Https
             var port = ConfigurationManager.AppSettings["ServerPort"];
             var pubkey = ConfigurationManager.AppSettings["ServerCertFilepath"];
             var pvtkey = ConfigurationManager.AppSettings["ServerPfxFilepath"];
+            var fcc = ConfigurationManager.AppSettings["ForceClientCertificate"];
+            var fsni = ConfigurationManager.AppSettings["ForceServerNameCheck"];
+            var tls13 = ConfigurationManager.AppSettings["EnableTLS13"];
 
             if (!Path.IsPathRooted(pubkey))
                 pubkey = GetFilePath(pubkey);
@@ -40,6 +46,13 @@ namespace Https
                 throw new ArgumentException($"AppSetting [ServerCertFilepath] ({pubkey}) does not exist");
             if (!File.Exists(pvtkey))
                 throw new ArgumentException($"AppSetting [ServerPfxFilepath] ({pvtkey}) does not exist");
+
+            if (bool.TryParse(fcc, out bool cc))
+                this.ForceClientCertificate = cc;
+            if (bool.TryParse(fsni, out bool sni))
+                this.ForceServerNameCheck = sni;
+            if (bool.TryParse(tls13, out bool use13))
+                this.EnableTLS13 = use13;
 
             this.ReceiveFilterFactory = new DefaultReceiveFilterFactory<Filter.TLSPacketFilter, Request.TLSRequest>();
             this.PublicKeyFile = pubkey;

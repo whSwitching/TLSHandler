@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using TLSHandler.Enums;
@@ -13,17 +14,18 @@ namespace TLSHandler.Handler
     public class Context
     {
         public TLSSessionState State { get { return _session != null ? _session.State : TLSSessionState.None; } }
+        public Func<X509Certificate2[], bool> ClientCertificatesCallback { get; set; }
 
         NegotiationParams _params = null;
         Session12 _session = null;
         string _pubkeyfile = null;
         string _prvkeyfile = null;
 
-        public Context(string pub_crt_filepath, string prv_pfx_filepath)
+        public Context(string pub_crt_filepath, string prv_pfx_filepath, bool force_ClientCert = false, bool force_ServerNameCheck = false, bool enable_tls13 = true)
         {
             _pubkeyfile = pub_crt_filepath;
             _prvkeyfile = prv_pfx_filepath;
-            _params = new NegotiationParams(false, true, false);
+            _params = new NegotiationParams(force_ClientCert, force_ServerNameCheck, enable_tls13);
         }
 
         public Result Initialize(TLS.Records.Handshake clientHello)
@@ -40,7 +42,7 @@ namespace TLSHandler.Handler
                         return err;
 
                     _session = tls13Session ? new Session13(_params, _pubkeyfile, _prvkeyfile) : new Session12(_params, _pubkeyfile, _prvkeyfile);
-
+                    _session.ClientCertificatesCallback = this.ClientCertificatesCallback;
                     return _session.Process_Record(clientHello);
                 }
                 else

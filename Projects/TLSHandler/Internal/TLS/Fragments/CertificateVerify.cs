@@ -28,5 +28,12 @@ namespace TLSHandler.Internal.TLS.Fragments
             Buffer.BlockCopy(slbytes, 0, Data, 2, 2);
             Buffer.BlockCopy(Signature, 0, Data, 4, Signature.Length);
         }
+
+        public CertificateVerify(byte[] bodyBytes) : base(bodyBytes)
+        {
+            SignatureAlgorithm = (SignatureAlgorithm)Utils.ToUInt16(bodyBytes);
+            SignatureLength = Utils.ToUInt16(bodyBytes,2);
+            Signature = bodyBytes.Skip(4).Take(SignatureLength).ToArray();
+        }
     }
 }

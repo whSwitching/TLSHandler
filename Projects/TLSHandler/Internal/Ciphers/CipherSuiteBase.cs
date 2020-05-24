@@ -40,5 +40,11 @@ namespace TLSHandler.Internal.Ciphers
             var parameters = (RSAParameters)privateParameters;
             return Utils.RSA_SignData(data, parameters, algorithm);
         }
+
+        public virtual bool SignatureVerify(byte[] data, byte[] signature, Enums.SignatureAlgorithm algorithm, object publicParameters)
+        {
+            var parameters = (RSAParameters)publicParameters;
+            return Utils.RSA_VerifyData(data, signature, parameters, algorithm);
+        }
     }
 }

@@ -21,7 +21,12 @@ namespace Https.Handler
 
             if (session.TLSContext == null)
             {
-                session.TLSContext = new Context(((HttpServer)session.AppServer).PublicKeyFile, ((HttpServer)session.AppServer).PrivateKeyFile);
+                var svr = (HttpServer)session.AppServer;
+                session.TLSContext = new Context(svr.PublicKeyFile, svr.PrivateKeyFile, svr.ForceClientCertificate, svr.ForceServerNameCheck, svr.EnableTLS13)
+                {
+                    ClientCertificatesCallback = (chain) => On_ClientCertificate_Verify(svr.PrivateKeyFile, chain)
+                };
+
                 var response = session.TLSContext.Initialize(record);
                 session.Send(response);
             }
@@ -31,5 +36,26 @@ namespace Https.Handler
             }
         }
         
+        bool On_ClientCertificate_Verify(string pfxFilePath, System.Security.Cryptography.X509Certificates.X509Certificate2[] client_certs)
+        {
+            /*
+            if (client_certs != null && client_certs.Length > 0)
+            {
+                var server_ca = new System.Security.Cryptography.X509Certificates.X509Certificate2(pfxFilePath);
+                var ca_chain = System.Security.Cryptography.X509Certificates.X509Chain.Create();
+                ca_chain.ChainPolicy.ExtraStore.Add(server_ca);
+                ca_chain.ChainPolicy.VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.AllowUnknownCertificateAuthority;
+                foreach (var cert in client_certs)
+                {
+                    if (!ca_chain.Build(cert))
+                        return false;
+                }
+                return true;
+            }
+            else
+                return false;
+            */
+            return true;
+        }
     }
 }

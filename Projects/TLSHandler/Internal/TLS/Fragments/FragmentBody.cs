@@ -20,9 +20,17 @@ namespace TLSHandler.Internal.TLS.Fragments
             {
                 return new ClientHello(bodyBytes);
             }
+            else if (type == HandshakeType.Certificate)
+            {
+                return new Certificate(bodyBytes);
+            }            
             else if (type == HandshakeType.Client_Key_Exchange)
             {
                 return new ClientKeyExchange(bodyBytes);
+            }
+            else if (type == HandshakeType.Certificate_Verify)
+            {
+                return new CertificateVerify(bodyBytes);
             }
             else if (type == HandshakeType.Finished)
             {

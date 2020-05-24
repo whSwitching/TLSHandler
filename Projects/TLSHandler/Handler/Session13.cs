@@ -70,22 +70,7 @@ namespace TLSHandler.Handler
         #endregion
 
         #region fragment process override
-        protected override Result Fragment_Handshake(Handshakes.Fragment frag)
-        {
-            LogSessionInfo(frag.Body);
-
-            if (frag.Body is Fragments.ClientHello ch)
-                return Fragment_ClientHello(ch);
-            else if (frag.Body is Fragments.ClientKeyExchange cke)
-                return Fragment_ClientKeyExchange(cke);
-            else if (frag.Body is Fragments.Finished cf)
-                return Fragment_ClientFinished(cf);
-            else if (frag.Body is Fragments.KeyUpdate ku)
-                return Fragment_ClientKeyUpdate(ku);
-            else
-                return Result.FatalAlert(AlertDescription.unexpected_message, $"Unhandled TLS HandshakeFragment.Body {frag.Body.GetType().Name}");
-        }
-
+        
         protected override Result Fragment_ClientHello(Fragments.ClientHello frag)
         {
             var sncheck = Fragment_ClientHello_ServerNameCheck(frag);
@@ -126,6 +111,7 @@ namespace TLSHandler.Handler
             var serverhelloBody = new Fragments.ServerHello(ProtocolVersion.TLSv1_2, _params.ServerRandom, _params.Session, _params.Cipher.CipherSuite, extensions);
             var serverhelloFragment = new Handshakes.Fragment(HandshakeType.Server_Hello, serverhelloBody);
             var encryptedExtFragment = new Handshakes.Fragment(HandshakeType.Encrypted_Extensions, new Fragments.EncryptedExtensions());
+            var certRequestFragment = new Handshakes.Fragment(HandshakeType.Certificate_Request, new Fragments.CertificateRequest(new byte[0]));
             var certificateFragment = new Handshakes.Fragment(HandshakeType.Certificate, new Fragments.Certificate(new[] { new X509Certificate2(_pubkeyfile) }, true));
 
             // add [ServerHello] to list
@@ -137,6 +123,9 @@ namespace TLSHandler.Handler
             (_params.Cipher as Ciphers.CipherSuiteBase13).Calculate_HandshakeSecret(clientHello_serverHello);
             // add [EncryptedExtensions] to list
             AppendHandshakeMessages(encryptedExtFragment);
+            // add [CertificateRequest] to list
+            if (_params.ClientCertificateRequire)
+                AppendHandshakeMessages(certRequestFragment);
             // add [Certificate] to list
             AppendHandshakeMessages(certificateFragment);
             // get (clienthello + serverhello + encryptedExtensions + certificate)
@@ -160,6 +149,8 @@ namespace TLSHandler.Handler
             // wrap 4 fragments in applicationRecord
             var plainPayload = new List<byte>();
             plainPayload.AddRange(encryptedExtFragment.Data);
+            if (_params.ClientCertificateRequire)
+                plainPayload.AddRange(certRequestFragment.Data);
             plainPayload.AddRange(certificateFragment.Data);
             plainPayload.AddRange(certVerifyFragment.Data);
             plainPayload.AddRange(finishFragment.Data);
@@ -167,6 +158,8 @@ namespace TLSHandler.Handler
             // log info
             LogSessionInfo(serverhelloFragment.Body);
             LogSessionInfo(encryptedExtFragment.Body);
+            if (_params.ClientCertificateRequire)
+                LogSessionInfo(certRequestFragment.Body);
             LogSessionInfo(certificateFragment.Body);
             LogSessionInfo(certVerifyFragment.Body);
             LogSessionInfo(finishFragment.Body);
@@ -204,9 +197,71 @@ namespace TLSHandler.Handler
             return _params.Cipher.Signature(dataToSign.ToArray(), _params.SignatureAlgorithm, prvParams);
         }
 
-        protected override Result Fragment_ClientFinished(Fragments.Finished frag)
+        #region Certificate
+        protected override Result Fragment_ClientCertificate(Fragments.Certificate frag)
         {
             if (State == TLSSessionState.Client_ChangeCipherSpec)
+            {
+                if (ClientCertificatesCallback != null)
+                {
+                    var valid = ClientCertificatesCallback(frag.Certs);
+                    if (!valid)
+                        return Result.FatalAlert(AlertDescription.bad_certificate, "Client Certificate invalid");
+                    _clientCertificates = frag.Certs.ToArray();
+                    State = TLSSessionState.Client_Certificate;
+                }
+                else
+                {
+                    throw new ArgumentNullException("NegotiationParams Configed ClientCertificateRequire = true, but ClientCertificateVerifyCallback is null");
+                }
+                return null;
+            }
+            else
+                return Result.FatalAlert(AlertDescription.unexpected_message, $"State [{State}] check failed on Client_Certificate message");
+        }
+
+        protected override Result Fragment_ClientCertificateVerify(Fragments.CertificateVerify frag)
+        {
+            if (State == TLSSessionState.Client_Certificate)
+            {
+                if (_clientCertificates != null && _clientCertificates.Length > 0)
+                {
+                    var clientHello_clientCert = GetHandshakeMessages(true); // without CertificateVerify message itself
+                    var valid = ClientCertificateSignatureVerify(clientHello_clientCert, frag);
+                    if (!valid)
+                        return Result.FatalAlert(AlertDescription.bad_certificate, "Client Certificate Signature Verify failure");
+                    State = TLSSessionState.Client_CertificateVerify;
+                    return null;
+                }
+                else
+                    return Result.FatalAlert(AlertDescription.unexpected_message, "Client Certificate Empty but sent CertificateVerify message");
+            }
+            else
+                return Result.FatalAlert(AlertDescription.unexpected_message, $"State [{State}] check failed on Client_CertificateVerify message");
+        }
+
+        bool ClientCertificateSignatureVerify(byte[] handshakeMsg, Fragments.CertificateVerify frag)
+        {
+            var handshakeHash = (_params.Cipher as Ciphers.CipherSuiteBase13).GetHashAlgorithm().ComputeHash(handshakeMsg);
+            var contextString = "TLS 1.3, client CertificateVerify";
+            var dataToSign = new List<byte>
+            {
+                0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,
+                0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,
+                0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,
+                0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,
+            };
+            dataToSign.AddRange(Encoding.ASCII.GetBytes(contextString));
+            dataToSign.Add(0x00);
+            dataToSign.AddRange(handshakeHash);
+            var pubKey = ((RSACryptoServiceProvider)_clientCertificates.First().PublicKey.Key).ExportParameters(false);
+            return _params.Cipher.SignatureVerify(dataToSign.ToArray(), frag.Signature, frag.SignatureAlgorithm, pubKey);
+        }
+        #endregion
+
+        protected override Result Fragment_ClientFinished(Fragments.Finished frag)
+        {
+            if ((!_params.ClientCertificateRequire && State == TLSSessionState.Client_ChangeCipherSpec) || (_params.ClientCertificateRequire && State == TLSSessionState.Client_CertificateVerify))
             {
                 var clientVerify = frag.Data;
                 var clientHello_serverfinish = GetHandshakeMessages(true);  // without this finished itself
@@ -234,7 +289,7 @@ namespace TLSHandler.Handler
                 return Result.FatalAlert(AlertDescription.unexpected_message, $"State [{State}] check failed on Client_Finished message");
         }
 
-        protected Result Fragment_ClientKeyUpdate(Fragments.KeyUpdate frag)
+        protected override Result Fragment_ClientKeyUpdate(Fragments.KeyUpdate frag)
         {
             throw new NotImplementedException();
         }

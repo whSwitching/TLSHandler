@@ -23,5 +23,25 @@ namespace TLSHandler.Internal.TLS.Extensions
                 HashSignatureAlgorithms[i] = (SignatureAlgorithm)Utils.ToUInt16(Data, 6 + i * 2);
             }
         }
+
+        public SignatureAlgorithms(SignatureAlgorithm[] sAlgorithms) : base(null)
+        {
+            HashSignatureAlgorithms = sAlgorithms;
+
+            using (var ms = new System.IO.MemoryStream())
+            {
+                // Extension Type
+                ms.WriteValue((ushort)Type);
+                // Extension Length
+                ms.WriteValue((ushort)(sAlgorithms.Length * 2 + 2));
+                // EntriesLength
+                ms.WriteValue((ushort)(sAlgorithms.Length * 2));
+                // HashSignatureAlgorithms
+                foreach (var sa in HashSignatureAlgorithms)
+                    ms.WriteValue((ushort)(sa));
+
+                Data = ms.ToArray();
+            }
+        }
     }
 }

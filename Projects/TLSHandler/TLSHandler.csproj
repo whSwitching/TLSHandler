@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\ClientCertificateType.cs" />
     <Compile Include="Handler\Context.cs" />
     <Compile Include="Enums\AlertDescription.cs" />
     <Compile Include="Enums\AlertLevel.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Internal\IBulkEncryption.cs" />
     <Compile Include="Internal\IKeyExchange.cs" />
     <Compile Include="Internal\IMessageAuthentication.cs" />
+    <Compile Include="Internal\TLS\Fragments\CertificateRequest.cs" />
     <Compile Include="Internal\TLS\Records\Alert.cs" />
     <Compile Include="Internal\TLS\Records\ApplicationData.cs" />
     <Compile Include="Internal\TLS\Records\ChangeCipherSpec.cs" />

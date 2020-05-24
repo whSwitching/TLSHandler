@@ -17,6 +17,7 @@ namespace TLSHandler.Enums
         PSK_KEY_EXCHANGE_MODES = 0x002D,
         SUPPORTED_GROUPS = 0x000A,      //rename from TLS1.2 "elliptic_curves" (Supported Elliptic Curves)
         EC_POINTS_FORMATS = 0x000B,
+        POST_HANDSHAKE_AUTH = 0x0031,
         SIGNATURE_ALGORITHMS_CERT = 0x0032,
         KEY_SHARE = 0x0033,
         RENEGOTIATION_INFO = 0xFF01
