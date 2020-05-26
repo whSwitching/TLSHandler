@@ -77,6 +77,8 @@
     <Compile Include="Internal\Ciphers\TLS_AES_128_GCM_SHA256.cs" />
     <Compile Include="Internal\Ciphers\TLS_AES_256_GCM_SHA384.cs" />
     <Compile Include="Internal\Ciphers\TLS_CHACHA20_POLY1305_SHA256.cs" />
+    <Compile Include="Internal\Ciphers\TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA.cs" />
+    <Compile Include="Internal\Ciphers\TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256.cs" />
     <Compile Include="Internal\Ciphers\TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA.cs" />
     <Compile Include="Internal\Ciphers\TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256.cs" />
     <Compile Include="Internal\Ciphers\TLS_RSA_WITH_AES_128_CBC_SHA256.cs" />
