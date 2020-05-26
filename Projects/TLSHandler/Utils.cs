@@ -210,50 +210,64 @@ namespace TLSHandler
             }
         }
 
-        public static byte[] RSA_SignData(byte[] data, RSAParameters privateParameters, Enums.SignatureAlgorithm algorithm)
+        public static byte[] RSA_SignData(byte[] data, RSA rsa, Enums.SignatureAlgorithm algorithm)
         {
-            using (var rsa = new RSACng())
-            {
-                rsa.ImportParameters(privateParameters);
-                
-                if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha512)
-                    return rsa.SignData(data, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha384)
-                    return rsa.SignData(data, HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha256)
-                    return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha512)
-                    return rsa.SignData(data, HashAlgorithmName.SHA512, RSASignaturePadding.Pss);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha384)
-                    return rsa.SignData(data, HashAlgorithmName.SHA384, RSASignaturePadding.Pss);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha256)
-                    return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
-                else
-                    throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
-            }
+            if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha512)
+                return rsa.SignData(data, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha384)
+                return rsa.SignData(data, HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha256)
+                return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha512)
+                return rsa.SignData(data, HashAlgorithmName.SHA512, RSASignaturePadding.Pss);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha384)
+                return rsa.SignData(data, HashAlgorithmName.SHA384, RSASignaturePadding.Pss);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha256)
+                return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+            else
+                throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
         }
 
-        public static bool RSA_VerifyData(byte[] data, byte[] signature, RSAParameters publicParameters, Enums.SignatureAlgorithm algorithm)
+        public static bool RSA_VerifyData(byte[] data, byte[] signature, RSA rsa, Enums.SignatureAlgorithm algorithm)
         {
-            using (var rsa = new RSACng())
-            {
-                rsa.ImportParameters(publicParameters);
+            if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha512)
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha384)
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha256)
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha512)
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA512, RSASignaturePadding.Pss);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha384)
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA384, RSASignaturePadding.Pss);
+            else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha256)
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+            else
+                throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
+        }
 
-                if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha512)
-                    return rsa.VerifyData(data, signature, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha384)
-                    return rsa.VerifyData(data, signature, HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pkcs1_sha256)
-                    return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha512)
-                    return rsa.VerifyData(data, signature, HashAlgorithmName.SHA512, RSASignaturePadding.Pss);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha384)
-                    return rsa.VerifyData(data, signature, HashAlgorithmName.SHA384, RSASignaturePadding.Pss);
-                else if (algorithm == Enums.SignatureAlgorithm.rsa_pss_rsae_sha256)
-                    return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
-                else
-                    throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
-            }
+        public static byte[] ECC_SignData(byte[] data, ECDsa ecdsa, Enums.SignatureAlgorithm algorithm)
+        {
+            if (algorithm == Enums.SignatureAlgorithm.ecdsa_secp256r1_sha256)
+                return ecdsa.SignData(data, HashAlgorithmName.SHA256);
+            else if (algorithm == Enums.SignatureAlgorithm.ecdsa_secp384r1_sha384)
+                return ecdsa.SignData(data, HashAlgorithmName.SHA384);
+            else if (algorithm == Enums.SignatureAlgorithm.ecdsa_secp521r1_sha512)
+                return ecdsa.SignData(data, HashAlgorithmName.SHA512);
+            else
+                throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
+        }
+
+        public static bool ECC_VerifyData(byte[] data, byte[] signature, ECDsa ecdsa, Enums.SignatureAlgorithm algorithm)
+        {
+            if (algorithm == Enums.SignatureAlgorithm.ecdsa_secp256r1_sha256)
+                return ecdsa.VerifyData(data, signature, HashAlgorithmName.SHA256);
+            else if (algorithm == Enums.SignatureAlgorithm.ecdsa_secp384r1_sha384)
+                return ecdsa.VerifyData(data, signature, HashAlgorithmName.SHA384);
+            else if (algorithm == Enums.SignatureAlgorithm.ecdsa_secp521r1_sha512)
+                return ecdsa.VerifyData(data, signature, HashAlgorithmName.SHA512);
+            else
+                throw new NotImplementedException($"SignatureAlgorithm {algorithm} NotImplemented");
         }
         #endregion
     }

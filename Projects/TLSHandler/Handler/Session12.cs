@@ -427,8 +427,7 @@ namespace TLSHandler.Handler
         {
             var ecdhpub = GeneratePubKey();
             var signdata = _params.ClientRandom.Data.Concat(_params.ServerRandom.Data).Concat(Fragments.ServerKeyExchange.ServerECDHParams(_params.KeyExchangeCurve, ecdhpub)).ToArray();
-            var prvParams = ((RSACryptoServiceProvider)(new X509Certificate2(_prvkeyfile, "", X509KeyStorageFlags.Exportable)).PrivateKey).ExportParameters(true);
-            var signature = _params.Cipher.Signature(signdata, _params.SignatureAlgorithm, prvParams);
+            var signature = MakeSignatureWithCertificate(signdata);
 
             var serverhelloBody = new Fragments.ServerHello(ProtocolVersion.TLSv1_2, _params.ServerRandom, _params.Session, _params.Cipher.CipherSuite);
             var certificateBody = new Fragments.Certificate(new[] { new X509Certificate2(_pubkeyfile) }, false);
@@ -489,6 +488,38 @@ namespace TLSHandler.Handler
                 return serverPub.Q.XCoord.GetEncoded().Concat(serverPub.Q.YCoord.GetEncoded()).ToArray();
             }
         }
+
+        protected byte[] MakeSignatureWithCertificate(byte[] signdata)
+        {
+            AsymmetricAlgorithm asymmetric = null;
+            using (var cert = new X509Certificate2(_prvkeyfile))
+            {
+                if (cert.PublicKey.Oid.FriendlyName == "RSA")
+                    asymmetric = cert.GetRSAPrivateKey();
+                else if (cert.PublicKey.Oid.FriendlyName == "ECC")
+                    asymmetric = cert.GetECDsaPrivateKey();
+                else
+                    throw new NotSupportedException($"Server Certificate Type {cert.PublicKey.Oid.FriendlyName} NotSupported");
+            }
+            var signature = _params.Cipher.Signature(signdata, _params.SignatureAlgorithm, asymmetric);
+            asymmetric.Dispose();
+            return signature;
+        }
+
+        protected bool VerifyWithClientCertificate(byte[] data, byte[] signature, SignatureAlgorithm signatureAlgorithm)
+        {
+            AsymmetricAlgorithm asymmetric = null;
+            var cert = _clientCertificates.First();
+            if (cert.PublicKey.Oid.FriendlyName == "RSA")
+                asymmetric = cert.GetRSAPublicKey();
+            else if (cert.PublicKey.Oid.FriendlyName == "ECC")
+                asymmetric = cert.GetECDsaPublicKey();
+            else
+                throw new NotSupportedException($"Client Certificate Type {cert.PublicKey.Oid.FriendlyName} NotSupported");
+            var verified = _params.Cipher.SignatureVerify(data, signature, signatureAlgorithm, asymmetric);
+            asymmetric.Dispose();
+            return verified;
+        }
         #endregion
 
         #region ClientKeyExchange
@@ -541,8 +572,7 @@ namespace TLSHandler.Handler
                 if (_clientCertificates != null && _clientCertificates.Length > 0)
                 {
                     var clientHello_clientKeyEx = GetHandshakeMessages(true); // without CertificateVerify message itself
-                    var pubKey = ((RSACryptoServiceProvider)_clientCertificates.First().PublicKey.Key).ExportParameters(false);
-                    var valid = _params.Cipher.SignatureVerify(clientHello_clientKeyEx, frag.Signature, frag.SignatureAlgorithm, pubKey);
+                    var valid = VerifyWithClientCertificate(clientHello_clientKeyEx, frag.Signature, frag.SignatureAlgorithm);
                     if (!valid)
                         return Result.FatalAlert(AlertDescription.bad_certificate, "Client Certificate Signature Verify failure");
                     return null;

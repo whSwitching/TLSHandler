@@ -18,13 +18,15 @@ namespace TLSHandler.Handler
 
         NegotiationParams _params = null;
         Session12 _session = null;
-        string _pubkeyfile = null;
-        string _prvkeyfile = null;
+        readonly string _pubkeyfile = null;
+        readonly string _prvkeyfile = null;
+        readonly string _serverCertType = null;
 
         public Context(string pub_crt_filepath, string prv_pfx_filepath, bool force_ClientCert = false, bool force_ServerNameCheck = false, bool enable_tls13 = true)
         {
             _pubkeyfile = pub_crt_filepath;
             _prvkeyfile = prv_pfx_filepath;
+            _serverCertType = new X509Certificate2(_pubkeyfile).PublicKey.Oid.FriendlyName;
             _params = new NegotiationParams(force_ClientCert, force_ServerNameCheck, enable_tls13);
         }
 
@@ -134,14 +136,24 @@ namespace TLSHandler.Handler
             }
             else
             {
-                if (client_ciphers.Contains(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) && ec.HasValue && sa.HasValue) // prefer ecdhe
-                    return new Ciphers.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256();
-                else if (client_ciphers.Contains(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) && ec.HasValue && sa.HasValue) // prefer ecdhe
-                    return new Ciphers.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA();
-                else if (client_ciphers.Contains(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256))  // ECDHE_RSA KeyExchange fail, fallback to RSA KeyExchange
-                    return new Ciphers.TLS_RSA_WITH_AES_128_CBC_SHA256();
-                else if (client_ciphers.Contains(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA))     // fallback to TLS1.2 Mandatory Cipher Suite
-                    return new Ciphers.TLS_RSA_WITH_AES_128_CBC_SHA();
+                if (_serverCertType == "RSA")
+                {
+                    if (client_ciphers.Contains(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) && ec.HasValue && sa.HasValue) // prefer ecdhe
+                        return new Ciphers.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256();
+                    else if (client_ciphers.Contains(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) && ec.HasValue && sa.HasValue) // prefer ecdhe
+                        return new Ciphers.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA();
+                    else if (client_ciphers.Contains(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256))  // ECDHE_RSA KeyExchange fail, fallback to RSA KeyExchange
+                        return new Ciphers.TLS_RSA_WITH_AES_128_CBC_SHA256();
+                    else if (client_ciphers.Contains(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA))     // fallback to TLS1.2 Mandatory Cipher Suite
+                        return new Ciphers.TLS_RSA_WITH_AES_128_CBC_SHA();
+                }
+                //else if (_serverCertType == "ECC")
+                //{
+                //    if (client_ciphers.Contains(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256) && ec.HasValue && sa.HasValue)
+                //        return new Ciphers.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256();
+                //    else if (client_ciphers.Contains(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA) && ec.HasValue && sa.HasValue)
+                //        return new Ciphers.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA();
+                //}
                 return null;
             }
         }
@@ -171,7 +183,6 @@ namespace TLSHandler.Handler
 
         NamedGroup? Select_EllipticCurve(NamedGroup[] client_groups)
         {
-            // secp256r1(0x0017) / secp384r1(0x0018) / secp521r1(0x0019) / x25519(0x001D) / x448(0x001E) supported for now
             if (client_groups != null)
             {
                 if (client_groups.Contains(NamedGroup.x25519))
@@ -190,21 +201,32 @@ namespace TLSHandler.Handler
 
         SignatureAlgorithm? Select_SignatureAlgorithm(SignatureAlgorithm[] client_algorithms)
         {
-            // rsa_pkcs1_sha256(0x0401) / rsa_pkcs1_sha384(0x0501) / rsa_pkcs1_sha512(0x0601) supported for now
             if (client_algorithms != null)
             {
-                if (client_algorithms.Contains(SignatureAlgorithm.rsa_pss_rsae_sha256))
-                    return SignatureAlgorithm.rsa_pss_rsae_sha256;
-                else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pss_rsae_sha384))
-                    return SignatureAlgorithm.rsa_pss_rsae_sha384;
-                else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pss_rsae_sha512))
-                    return SignatureAlgorithm.rsa_pss_rsae_sha512;
-                else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pkcs1_sha512))
-                    return SignatureAlgorithm.rsa_pkcs1_sha512;
-                else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pkcs1_sha384))
-                    return SignatureAlgorithm.rsa_pkcs1_sha384;
-                else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pkcs1_sha256))
-                    return SignatureAlgorithm.rsa_pkcs1_sha256;
+                if (_serverCertType == "RSA")
+                {
+                    if (client_algorithms.Contains(SignatureAlgorithm.rsa_pss_rsae_sha256))
+                        return SignatureAlgorithm.rsa_pss_rsae_sha256;
+                    else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pss_rsae_sha384))
+                        return SignatureAlgorithm.rsa_pss_rsae_sha384;
+                    else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pss_rsae_sha512))
+                        return SignatureAlgorithm.rsa_pss_rsae_sha512;
+                    else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pkcs1_sha512))
+                        return SignatureAlgorithm.rsa_pkcs1_sha512;
+                    else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pkcs1_sha384))
+                        return SignatureAlgorithm.rsa_pkcs1_sha384;
+                    else if (client_algorithms.Contains(SignatureAlgorithm.rsa_pkcs1_sha256))
+                        return SignatureAlgorithm.rsa_pkcs1_sha256;
+                }
+                //else if (_serverCertType == "ECC")
+                //{
+                //    if (client_algorithms.Contains(SignatureAlgorithm.ecdsa_secp256r1_sha256))
+                //        return SignatureAlgorithm.ecdsa_secp256r1_sha256;
+                //    else if (client_algorithms.Contains(SignatureAlgorithm.ecdsa_secp384r1_sha384))
+                //        return SignatureAlgorithm.ecdsa_secp384r1_sha384;
+                //    else if (client_algorithms.Contains(SignatureAlgorithm.ecdsa_secp521r1_sha512))
+                //        return SignatureAlgorithm.ecdsa_secp521r1_sha512;
+                //}
             }
             return null;
         }

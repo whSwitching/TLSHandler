@@ -193,8 +193,8 @@ namespace TLSHandler.Handler
             dataToSign.AddRange(Encoding.ASCII.GetBytes(contextString));
             dataToSign.Add(0x00);
             dataToSign.AddRange(handshakeHash);
-            var prvParams = ((RSACryptoServiceProvider)(new X509Certificate2(_prvkeyfile, "", X509KeyStorageFlags.Exportable)).PrivateKey).ExportParameters(true);
-            return _params.Cipher.Signature(dataToSign.ToArray(), _params.SignatureAlgorithm, prvParams);
+
+            return MakeSignatureWithCertificate(dataToSign.ToArray());
         }
 
         #region Certificate
@@ -254,8 +254,7 @@ namespace TLSHandler.Handler
             dataToSign.AddRange(Encoding.ASCII.GetBytes(contextString));
             dataToSign.Add(0x00);
             dataToSign.AddRange(handshakeHash);
-            var pubKey = ((RSACryptoServiceProvider)_clientCertificates.First().PublicKey.Key).ExportParameters(false);
-            return _params.Cipher.SignatureVerify(dataToSign.ToArray(), frag.Signature, frag.SignatureAlgorithm, pubKey);
+            return VerifyWithClientCertificate(dataToSign.ToArray(), frag.Signature, frag.SignatureAlgorithm);
         }
         #endregion
 

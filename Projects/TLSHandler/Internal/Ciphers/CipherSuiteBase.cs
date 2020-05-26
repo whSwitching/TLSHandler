@@ -35,16 +35,22 @@ namespace TLSHandler.Internal.Ciphers
 
         public abstract byte[] ServerMessageAuthCode(byte[] message);
 
-        public virtual byte[] Signature(byte[] data, Enums.SignatureAlgorithm algorithm, object privateParameters)
+        public virtual byte[] Signature(byte[] data, Enums.SignatureAlgorithm algorithm, AsymmetricAlgorithm asymmetric)
         {
-            var parameters = (RSAParameters)privateParameters;
-            return Utils.RSA_SignData(data, parameters, algorithm);
+            if (asymmetric is RSA rsa)
+                return Utils.RSA_SignData(data, rsa, algorithm);
+            else if (asymmetric is ECDsa ecc)
+                return Utils.ECC_SignData(data, ecc, algorithm);
+            return null;
         }
 
-        public virtual bool SignatureVerify(byte[] data, byte[] signature, Enums.SignatureAlgorithm algorithm, object publicParameters)
+        public virtual bool SignatureVerify(byte[] data, byte[] signature, Enums.SignatureAlgorithm algorithm, AsymmetricAlgorithm asymmetric)
         {
-            var parameters = (RSAParameters)publicParameters;
-            return Utils.RSA_VerifyData(data, signature, parameters, algorithm);
+            if (asymmetric is RSA rsa)
+                return Utils.RSA_VerifyData(data, signature, rsa, algorithm);
+            else if (asymmetric is ECDsa ecc)
+                return Utils.ECC_VerifyData(data, signature, ecc, algorithm);
+            return false;
         }
     }
 }
