@@ -38,6 +38,8 @@ BulkEncryption implementation:
 - [x] TLS_RSA_WITH_AES_128_CBC_SHA256 (0x003C)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xC013)
 - [x] TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (0xC027)
+- [ ] TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA (0xC009)
+- [ ] TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256 (0xC023)
 - [x] TLS\_AES\_128\_GCM\_SHA256 (0x1301) &emsp;&emsp; _[(TLS 1.3 Mandatory)](https://tools.ietf.org/html/rfc8446#section-9.1)_
 - [x] TLS_AES_256_GCM_SHA384 (0x1302)
 - [x] TLS\_CHACHA20\_POLY1305\_SHA256 (0x1303) &emsp;&emsp; _(TLS1.3 Mobile Client Prefer)_
