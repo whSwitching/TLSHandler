@@ -181,6 +181,10 @@ namespace TLSHandler.Handler
 
         byte[] MakeCertificateVerifySignature(byte[] handshakeMsg)
         {
+            //https://tools.ietf.org/html/rfc8446#page-70
+            //In addition, the signature algorithm MUST be compatible with the key in the sender's end-entity certificate.
+            //RSA signatures MUST use an RSASSA - PSS algorithm, regardless of whether RSASSA-PKCS1 - v1_5 algorithms appear in "signature_algorithms".
+            //The SHA - 1 algorithm MUST NOT be used in any signatures of CertificateVerify messages.
             var handshakeHash = (_params.Cipher as Ciphers.CipherSuiteBase13).GetHashAlgorithm().ComputeHash(handshakeMsg);
             var contextString = "TLS 1.3, server CertificateVerify"; // or "TLS 1.3, client CertificateVerify"
             var dataToSign = new List<byte>
