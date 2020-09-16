@@ -23,12 +23,11 @@ namespace TLSHandler.Internal.TLS.Fragments
                 var len = Utils.UInt24Bytes((uint)raw.Length);
                 certs.AddRange(len);
                 certs.AddRange(raw);
+                if (tls13)
+                    certs.AddRange(new byte[] { 0x00, 0x00 }); // Certificate Extensions
             }
 
             var totalLen = (uint)certs.Count;
-            if (tls13)
-                totalLen += 2;              // 2 bytes Certificate Extensions length
-
             var totalLenBytes = Utils.UInt24Bytes(totalLen);
 
             using (var ms = new System.IO.MemoryStream())
@@ -37,8 +36,6 @@ namespace TLSHandler.Internal.TLS.Fragments
                     ms.WriteByte(0x00);     // request_context
                 ms.Write(totalLenBytes, 0, totalLenBytes.Length);
                 ms.Write(certs.ToArray(), 0, certs.Count);
-                if (tls13)
-                    ms.Write(new byte[] { 0x00, 0x00 }, 0, 2); // Certificate Extensions
 
                 Data = ms.ToArray();
             }
@@ -54,16 +51,21 @@ namespace TLSHandler.Internal.TLS.Fragments
                     tls13 = true;
             }
             var offset = tls13 ? 4 : 3;
-            var certOffset = tls13 ? (bodyBytes.Length - 3) : (bodyBytes.Length - 1);
             var certs = new List<X509Certificate2>();
             var idx = offset;
-            while (idx < certOffset)
+            while (idx < bodyBytes.Length)
             {
                 var len = Utils.ToUInt24(bodyBytes, idx);
                 idx += 3;
                 var raw = bodyBytes.Skip(idx).Take((int)len).ToArray();
                 certs.Add(new X509Certificate2(raw));
                 idx += raw.Length;
+                if (tls13)
+                {
+                    var certExtLen = Utils.ToUInt16(bodyBytes, idx);
+                    idx += 2;
+                    idx += certExtLen;
+                }
             }
             Certs = certs.ToArray();
         }
