@@ -104,12 +104,14 @@ namespace TLSHandler.Internal.Ciphers
             return Utils.BytesEqual(calculatedVerifyData, clientVerifyData);
         }
 
-        protected void UpdateIv(byte[] iv, ulong seq)
+        //https://tools.ietf.org/html/rfc8446#section-5.3
+        protected byte[] DeriveNonce(byte[] iv, ulong seq)
         {
+            var nonce = new byte[iv.Length];
+            Buffer.BlockCopy(iv, 0, nonce, 0, iv.Length);
             for (var i = 0; i < 8; i++)
-            {
-                iv[iv.Length - 1 - i] ^= ((byte)((seq >> (i * 8)) & 0xFF));
-            }
+                nonce[nonce.Length - 1 - i] = (byte)(iv[iv.Length - 1 - i] ^ (byte)((seq >> (i * 8)) & 0xFF));
+            return nonce;
         }
 
         public abstract HashAlgorithm GetHashAlgorithm();

@@ -28,11 +28,9 @@ namespace TLSHandler.Internal.Ciphers
 
             using (var cipher = GetBulkEncryption())
             {
-                var ret = cipher.Encrypt(plain, Server_Application_Key, Server_Application_Iv, aad, null);
-
+                var nonce = DeriveNonce(Server_Application_Iv, Server_Application_Iv_Seq);
+                var ret = cipher.Encrypt(plain, Server_Application_Key, nonce, aad, null);
                 Server_Application_Iv_Seq++;
-                UpdateIv(Server_Application_Iv, Server_Application_Iv_Seq);
-
                 return ret;
             }
         }
@@ -41,11 +39,9 @@ namespace TLSHandler.Internal.Ciphers
         {
             using (var cipher = GetBulkEncryption())
             {
-                var ret = cipher.Decrypt(secret, Client_Application_Key, Client_Application_Iv, additional_data, null);
-
+                var nonce = DeriveNonce(Client_Application_Iv, Client_Application_Iv_Seq);
+                var ret = cipher.Decrypt(secret, Client_Application_Key, nonce, additional_data, null);
                 Client_Application_Iv_Seq++;
-                UpdateIv(Client_Application_Iv, Client_Application_Iv_Seq);
-
                 return ret;
             }
         }
@@ -113,11 +109,9 @@ namespace TLSHandler.Internal.Ciphers
 
             using (var cipher = GetBulkEncryption())
             {
-                var ret = cipher.Encrypt(plain, Server_Handshake_Key, Server_Handshake_Iv, aad, null);
-
+                var nonce = DeriveNonce(Server_Handshake_Iv, Server_Handshake_Iv_Seq);
+                var ret = cipher.Encrypt(plain, Server_Handshake_Key, nonce, aad, null);
                 Server_Handshake_Iv_Seq++;
-                UpdateIv(Server_Handshake_Iv, Server_Handshake_Iv_Seq);
-
                 return ret;
             }
         }
@@ -126,11 +120,9 @@ namespace TLSHandler.Internal.Ciphers
         {
             using (var cipher = GetBulkEncryption())
             {
-                var ret = cipher.Decrypt(messages, Client_Handshake_Key, Client_Handshake_Iv, applicationRecHeader, null);
-
+                var nonce = DeriveNonce(Client_Handshake_Iv, Client_Handshake_Iv_Seq);
+                var ret = cipher.Decrypt(messages, Client_Handshake_Key, nonce, applicationRecHeader, null);
                 Client_Handshake_Iv_Seq++;
-                UpdateIv(Client_Handshake_Iv, Client_Handshake_Iv_Seq);
-
                 return ret;
             }
         }
